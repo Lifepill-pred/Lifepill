@@ -15,7 +15,11 @@ app.config['SECRET_KEY'] = 'SUPER_SECRET_KEY_999'
 
 # База данных (SQLite)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'site.db')
+# Было (удаляем):
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'site.db')
+
+# Стало (вставляем):
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://lifepill_db_user:6AOp4tRkMjZveS4s6y6SsZQtJGtrvmmT@dpg-d56qi6shg0os73as97bg-a/lifepill_db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Настройки почты Gmail (ВСТАВЬ СВОЙ ПАРОЛЬ ПРИЛОЖЕНИЯ)
@@ -173,4 +177,5 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
+
     app.run(debug=True)
