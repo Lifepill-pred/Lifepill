@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePill - История Приемов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .status-received { background-color: #e8f5e9; color: #388e3c; font-weight: 600; }
+        .status-skipped { background-color: #ffebee; color: #d32f2f; font-weight: 600; }
+        .status-pending { background-color: #fffde7; color: #fbc02d; font-weight: 600; }
+        .compliance-box {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .compliance-rate {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .compliance-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>LifePill</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/history" style="color: var(--primary-color);">История Приемов</a>
+                <a href="/logout" class="btn-logout">Выход</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Журнал Приемов (Профиль: {{ username }})</h2>
+        
+        <div class="compliance-box">
+            <div class="compliance-rate">{{ compliance_rate }}%</div>
+            <div class="compliance-label">Процент соблюдения протоколов (за {{ total_attempts }} попыток)</div>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            {% if history_list %}
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Время Активации</th>
+                            <th>Препарат</th>
+                            <th>Слот</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history_list %}
+                        <tr>
+                            <td>{{ item.time }}</td>
+                            <td>{{ item.med_name }}</td>
+                            <td>Слот {{ item.slot }}</td>
+                            <td class="status-{{ item.status }}">
+                                {{ item.status.upper() }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="padding: 30px; text-align: center; color: var(--secondary-color);">
+                    В вашей истории пока нет записей.
+                </p>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            &copy; 2025 LifePill | Био-Менеджмент
+        </div>
+    </footer>
+</body>
+</html>

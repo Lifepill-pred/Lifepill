@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePill - Результат Действия</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .result-card {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            text-align: center;
+        }
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .icon.success { color: #4CAF50; }
+        .icon.error { color: #F44336; }
+        .icon.info { color: #2196F3; }
+        .message-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+        .back-link {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card result-card">
+        {% if status == 'success' %}
+            <div class="icon success">✔</div>
+            <h2 style="color: #4CAF50;">Успех!</h2>
+        {% elif status == 'info' %}
+            <div class="icon info">ℹ</div>
+            <h2 style="color: #2196F3;">Информация</h2>
+        {% else %}
+            <div class="icon error">✖</div>
+            <h2 style="color: #F44336;">Ошибка</h2>
+        {% endif %}
+
+        <p class="message-text">{{ message | safe }}</p>
+        
+        <div class="back-link">
+            <a href="{{ url_for('index') }}" class="btn-primary">Вернуться в LifePill</a>
+        </div>
+    </div>
+</body>
+</html>

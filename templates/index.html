@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePill - Система Био-Менеджмента</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>LifePill</h1>
+            <nav>
+                {% if user_logged_in %}
+                    <a href="/">Главная</a>
+                    <a href="/history">История Приемов</a> 
+                    <a href="/logout" class="btn-logout">Выход</a>
+                {% else %}
+                    <a href="/register">Регистрация</a>
+                    <a href="/login">Вход</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' or category == 'info' %}
+                        <p class="message-{{ category }}">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if user_logged_in %}
+            <h2>Ваш Персональный Протокол (Профиль: {{ username }})</h2>
+            
+            <div style="display: flex; gap: 30px; margin-bottom: 35px;">
+                <div class="card" style="flex: 1;">
+                    <h3>Часовой Пояс (Time Zone)</h3>
+                    <p class="text-secondary">Ваш текущий пояс: <strong>{{ user_timezone }}</strong></p>
+                    <form id="timezoneForm">
+                        <div class="form-group">
+                            <label for="timezone_select">Выберите ваш часовой пояс:</label>
+                            <select id="timezone_select" name="timezone_select" required>
+                                {% for tz_value, tz_label in timezones %}
+                                    <option value="{{ tz_value }}" {% if tz_value == user_timezone %} selected {% endif %}>
+                                        {{ tz_label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-secondary">Сохранить</button>
+                        <p id="timezone_message" class="hidden message-info"></p>
+                    </form>
+                </div>
+
+                <div class="card reminder-form-card" style="flex: 2;">
+                    <h3>Установить Новый Прием</h3>
+                    <form id="setReminderForm">
+                        <div class="form-group">
+                            <label for="med_name">Наименование Препарата:</label>
+                            <input type="text" id="med_name" required placeholder="Например: Витамин D, Комплекс-Bio">
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="reminder_time">Время (HH:MM) активации:</label>
+                                <input type="time" id="reminder_time" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="slot">Ячейка (1-4):</label>
+                                <select id="slot" name="slot" required>
+                                    <option value="1">Слот 1</option>
+                                    <option value="2">Слот 2</option>
+                                    <option value="3">Слот 3</option>
+                                    <option value="4">Слот 4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="frequency">Частота Повтора:</label>
+                            <select id="frequency" name="frequency" required>
+                                <option value="daily">Ежедневно (Daily)</option>
+                                <option value="once">Однократно (Once)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder_email">Email для уведомлений:</label>
+                            <input type="email" id="reminder_email" value="{{ user_email }}" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Установить Протокол</button>
+                        <p id="message" class="hidden"></p>
+                    </form>
+                </div>
+            </div>
+
+            <h2>Активные Напоминания</h2>
+            <div id="remindersList" class="reminders-grid">
+                <p>Загрузка...</p>
+            </div>
+        {% else %}
+            <div class="hero">
+                <h2>LifePill 💊</h2>
+                <p>Ваша система биологического менеджмента. Точность. Чистота. Будущее.</p>
+                <a href="/register" class="btn-primary large">Начать Регистрацию</a>
+            </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <div class="container">
+            &copy; 2025 LifePill | Био-Менеджмент
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

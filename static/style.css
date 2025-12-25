@@ -1,0 +1,444 @@
+/*
+======================================================
+✨ BIO-TECH LAB STYLES & VARIABLES
+======================================================
+*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+:root {
+    /* Цветовая Палитра "Мятная Лаборатория" */
+    --primary-color: #00b894; /* Мятно-бирюзовый (Акцент, как в лого) */
+    --secondary-color: #636e72; /* Серый текст */
+    --background-light: #f7f9fb; /* Почти белый фон */
+    --card-background: #ffffff; /* Белый фон карточек */
+    --text-primary: #2d3436; /* Основной темный текст */
+    --text-secondary: #a2aab0; /* Приглушенный текст */
+    --border-color: #dfe6e9; /* Светлая граница */
+    --success-color: #00b894;
+    --danger-color: #d63031; /* Мягкий красный */
+
+    /* Дизайн */
+    --font-primary: 'Montserrat', sans-serif;
+    --border-radius: 12px;
+    --box-shadow-clean: 0 4px 15px rgba(0, 0, 0, 0.05); /* Легкая, чистая тень */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    background-color: var(--background-light);
+    color: var(--text-primary);
+    padding-top: 80px;
+    transition: background-color 0.3s;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/*
+======================================================
+✨ HEADER (Шапка - Чистый интерфейс)
+======================================================
+*/
+header {
+    background-color: var(--card-background);
+    padding: 15px 0;
+    border-bottom: 3px solid var(--primary-color);
+    box-shadow: var(--box-shadow-clean);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+header h1 {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+header nav a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    margin-left: 25px;
+    padding: 5px 0;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+header nav a:hover {
+    color: var(--primary-color);
+}
+
+/*
+======================================================
+✨ BUTTONS
+======================================================
+*/
+.btn-primary, .btn-logout {
+    display: inline-block;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #008a6b; /* Более темный мятный */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+}
+
+.btn-logout {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-logout:hover {
+    background-color: #505c60;
+    transform: translateY(-2px);
+}
+
+.btn-icon {
+    background: none;
+    color: var(--text-secondary);
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.btn-icon:hover {
+    color: var(--danger-color);
+}
+
+/*
+======================================================
+✨ SECONDARY BUTTON STYLES (для сохранения настроек)
+======================================================
+*/
+.btn-secondary {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    
+    /* Цветовая схема: Менее заметный, но чистый синий/серый */
+    color: var(--text-primary);
+    background-color: #e6f0f5; /* Светло-голубой */
+    border: 1px solid #c9d8e5; 
+}
+
+.btn-secondary:hover {
+    background-color: #d0e0ec; /* Немного темнее при наведении */
+    border-color: #b0c2d3;
+}
+
+/* Стилизация блока часового пояса для лучшей визуализации */
+.text-secondary {
+    color: #667e91;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+/*
+======================================================
+✨ CARDS & LAYOUT
+======================================================
+*/
+
+.card {
+    background-color: var(--card-background);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-clean);
+    margin-bottom: 35px;
+    border: 1px solid var(--border-color);
+}
+
+/* HERO Section */
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, var(--card-background) 0%, #e0f8f0 100%); /* Мягкий мятный градиент */
+    color: var(--text-primary);
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 8px 25px rgba(0, 184, 148, 0.15);
+}
+
+.hero h2 {
+    font-family: var(--font-primary);
+    font-size: 3.0rem;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-weight: 300;
+}
+
+.hero p {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    color: var(--secondary-color);
+}
+
+/*
+======================================================
+✨ FORMS
+======================================================
+*/
+.form-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px);
+    padding: 40px 0;
+}
+
+.auth-card {
+    max-width: 420px;
+    width: 100%;
+    padding: 40px;
+    text-align: center;
+}
+
+.auth-card h2 {
+    font-family: var(--font-primary);
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background-color: #f0f4f7; /* Очень светлый фон для поля ввода */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.2);
+    outline: none;
+    background-color: var(--card-background);
+}
+
+.auth-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/*
+======================================================
+✨ REMINDERS
+======================================================
+*/
+.main h2 {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    text-align: left;
+    margin-bottom: 25px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.reminders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    gap: 25px; 
+    margin-top: 30px;
+}
+
+.reminder-item {
+    background-color: var(--card-background);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    border-left: 5px solid var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: var(--box-shadow-clean);
+}
+
+.reminder-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reminder-item h4 {
+    margin-bottom: 4px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.reminder-item .time {
+    font-family: var(--font-primary);
+    font-size: 2.0rem;
+    font-weight: 300;
+    color: var(--primary-color);
+}
+
+.reminder-item small {
+    color: var(--secondary-color);
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8rem;
+}
+
+/*
+======================================================
+✨ FOOTER & UTILITIES
+======================================================
+*/
+footer {
+    background-color: var(--card-background);
+    color: var(--secondary-color);
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 50px;
+    border-top: 1px solid var(--border-color);
+}
+
+.message-success {
+    color: var(--success-color);
+    font-weight: 700;
+    margin-top: 15px;
+    background-color: #e8fff8;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--success-color);
+}
+
+.message-error {
+    color: var(--danger-color);
+    font-weight: 700;
+    background-color: #fde8e9;
+    border: 1px solid var(--danger-color);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/*
+======================================================
+✨ MEDIA QUERIES
+======================================================
+*/
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+    .reminders-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*
+======================================================
+✨ HISTORY TABLE STYLES
+======================================================
+*/
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.history-table thead th {
+    background-color: #e0f8f0; /* Очень светлый мятный фон */
+    color: var(--text-primary);
+    padding: 15px 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.history-table tbody td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.history-table tbody tr:hover {
+    background-color: #f7f9fb; /* Легкое выделение при наведении */
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Изменение стилей для полей select */
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    background-color: #f0f4f7;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    appearance: none; /* Убираем стандартную стрелку */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%2300b894" d="M10 4L6 8L2 4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    cursor: pointer;
+}
