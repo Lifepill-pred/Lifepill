@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 Flask-Mail
 pytz
 gunicorn
+psycopg2-binary
