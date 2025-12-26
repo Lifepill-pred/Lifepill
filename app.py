@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SUPER_SECRET_KEY_999'
 
-# Твоя база данных на Render
+# Подключение к твоей базе Postgres
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lifepill_db_user:6AOp4tRkMjZveS4s6y6SsZQtJGtrvmmT@dpg-d56qi6shg0os73as97bg-a/lifepill_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -24,7 +24,9 @@ app.config['MAIL_DEFAULT_SENDER'] = 'ikthomeworkproj5@gmail.com'
 db = SQLAlchemy(app)
 mail = Mail(app)
 
-# Модели на основе твоего кода
+# ==========================================
+# МОДЕЛИ (Теперь точно с колонкой SLOT)
+# ==========================================
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -38,9 +40,12 @@ class Reminder(db.Model):
     time_str = db.Column(db.String(5), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     frequency = db.Column(db.String(10), default='daily')
-    slot = db.Column(db.Integer, default=1)
+    slot = db.Column(db.Integer, default=1) # ТА САМАЯ КОЛОНКА
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+# ==========================================
+# РОУТЫ
+# ==========================================
 @app.route('/')
 def index():
     user = User.query.get(session.get('user_id')) if 'user_id' in session else None
@@ -54,11 +59,15 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        user = User(username=request.form['username'], email=request.form['email'], 
-                    password=generate_password_hash(request.form['password']))
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('login'))
+        try:
+            hashed_pw = generate_password_hash(request.form['password'])
+            user = User(username=request.form['username'], email=request.form['email'], password=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('login'))
+        except:
+            db.session.rollback()
+            return "Ошибка регистрации (возможно, такой логин уже есть)"
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,6 +75,7 @@ def login():
     if request.method == 'POST':
         user = User.query.filter_by(username=request.form['username']).first()
         if user and check_password_hash(user.password, request.form['password']):
+            session.permanent = True
             session['user_id'] = user.id
             return redirect(url_for('index'))
     return render_template('login.html')
@@ -75,36 +85,44 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# API для твоего script.js
+# API ДЛЯ SCRIPT.JS
 @app.route('/api/set_reminder', methods=['POST'])
 def set_reminder():
+    if 'user_id' not in session: return jsonify({'error': 'unauthorized'}), 401
     data = request.json
-    new_rem = Reminder(med_name=data['med_name'], time_str=data['reminder_time'], 
-                       email=data['reminder_email'], frequency=data['frequency'], 
-                       slot=int(data['slot']), user_id=session['user_id'])
+    new_rem = Reminder(
+        med_name=data['med_name'],
+        time_str=data['reminder_time'],
+        email=data['reminder_email'],
+        frequency=data['frequency'],
+        slot=int(data['slot']),
+        user_id=session['user_id']
+    )
     db.session.add(new_rem)
     db.session.commit()
-    return jsonify({'message': 'Протокол установлен!'})
+    return jsonify({'message': 'OK'})
 
 @app.route('/api/get_reminders')
 def get_reminders():
+    if 'user_id' not in session: return jsonify([]), 401
     rems = Reminder.query.filter_by(user_id=session['user_id']).all()
-    return jsonify([{'id': r.id, 'med_name': r.med_name, 'time': r.time_str, 'slot': r.slot, 'frequency': r.frequency, 'email': r.email} for r in rems])
+    return jsonify([{'id': r.id, 'med_name': r.med_name, 'time': r.time_str, 'slot': r.slot} for r in rems])
 
 @app.route('/api/delete_reminder/<int:id>', methods=['POST'])
 def delete_reminder(id):
-    rem = Reminder.query.filter_by(id=id, user_id=session['user_id']).first()
+    rem = Reminder.query.filter_by(id=id, user_id=session.get('user_id')).first()
     if rem:
         db.session.delete(rem)
         db.session.commit()
     return jsonify({'status': 'ok'})
 
-@app.route('/cron-check-secret-777')
-def cron_check():
-    # Простейшая логика рассылки для проверки
-    return "OK", 200
-
+# ==========================================
+# ИНИЦИАЛИЗАЦИЯ БАЗЫ (ВНИМАТЕЛЬНО!)
+# ==========================================
 with app.app_context():
+    # Раскомментируй db.drop_all() НИЖЕ только ОДИН РАЗ, чтобы обновить базу.
+    # После того как сайт заработает, снова закомментируй её.
+    # db.drop_all() 
     db.create_all()
 
 if __name__ == '__main__':
