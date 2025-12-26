@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SUPER_SECRET_KEY_999'
 
-# Твоя база данных
+# Подключение к твоей базе Postgres на Render
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lifepill_db_user:6AOp4tRkMjZveS4s6y6SsZQtJGtrvmmT@dpg-d56qi6shg0os73as97bg-a/lifepill_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -25,9 +25,10 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 
 # ==========================================
-# МОДЕЛИ (С колонками SLOT и FREQUENCY)
+# МОДЕЛИ
 # ==========================================
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -35,6 +36,7 @@ class User(db.Model):
     timezone = db.Column(db.String(50), default='Europe/Moscow')
 
 class Reminder(db.Model):
+    __tablename__ = 'reminder'
     id = db.Column(db.Integer, primary_key=True)
     med_name = db.Column(db.String(100), nullable=False)
     time_str = db.Column(db.String(5), nullable=False)
@@ -44,7 +46,7 @@ class Reminder(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # ==========================================
-# РОУТЫ И API
+# ОСНОВНЫЕ СТРАНИЦЫ
 # ==========================================
 @app.route('/')
 def index():
@@ -68,7 +70,7 @@ def register():
             return redirect(url_for('login'))
         except:
             db.session.rollback()
-            return "Ошибка! Логин или Email занят."
+            return "Ошибка! Возможно, логин уже занят."
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -86,6 +88,9 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+# ==========================================
+# API ДЛЯ JAVASCRIPT
+# ==========================================
 @app.route('/api/set_reminder', methods=['POST'])
 def set_reminder():
     if 'user_id' not in session: return jsonify({'error': 'unauthorized'}), 401
@@ -117,11 +122,23 @@ def delete_reminder(id):
     return jsonify({'status': 'ok'})
 
 # ==========================================
-# СИЛОВОЙ СБРОС (ВНИМАНИЕ)
+# ИНИЦИАЛИЗАЦИЯ (С ПРИНУДИТЕЛЬНЫМ СБРОСОМ)
 # ==========================================
 with app.app_context():
-    db.drop_all()  # ЭТА СТРОКА УДАЛИТ СТАРЫЕ ТАБЛИЦЫ
-    db.create_all() # ЭТА СТРОКА СОЗДАСТ НОВЫЕ С КОЛОНКОЙ SLOT
+    # ЭТОТ БЛОК УДАЛИТ ВСЕ ТАБЛИЦЫ С ЗАВИСИМОСТЯМИ
+    try:
+        db.session.execute(db.text('DROP TABLE IF EXISTS reminder CASCADE;'))
+        db.session.execute(db.text('DROP TABLE IF EXISTS history CASCADE;'))
+        db.session.execute(db.text('DROP TABLE IF EXISTS "user" CASCADE;'))
+        db.session.commit()
+        print("База очищена.")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка очистки: {e}")
+
+    # Создаем таблицы заново
+    db.create_all()
+    print("База данных обновлена успешно!")
 
 if __name__ == '__main__':
     app.run(debug=True)
