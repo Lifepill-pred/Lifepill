@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SUPER_SECRET_KEY_999'
 
-# Подключение к твоей базе Postgres
+# Твоя база данных
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lifepill_db_user:6AOp4tRkMjZveS4s6y6SsZQtJGtrvmmT@dpg-d56qi6shg0os73as97bg-a/lifepill_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -25,7 +25,7 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 
 # ==========================================
-# МОДЕЛИ (Теперь точно с колонкой SLOT)
+# МОДЕЛИ (С колонками SLOT и FREQUENCY)
 # ==========================================
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,21 +40,22 @@ class Reminder(db.Model):
     time_str = db.Column(db.String(5), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     frequency = db.Column(db.String(10), default='daily')
-    slot = db.Column(db.Integer, default=1) # ТА САМАЯ КОЛОНКА
+    slot = db.Column(db.Integer, default=1)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # ==========================================
-# РОУТЫ
+# РОУТЫ И API
 # ==========================================
 @app.route('/')
 def index():
     user = User.query.get(session.get('user_id')) if 'user_id' in session else None
+    common_tz = [(tz, tz.replace('_', ' ')) for tz in pytz.common_timezones if '/' in tz]
     return render_template('index.html', 
                            user_logged_in=bool(user),
                            username=user.username if user else None,
                            user_email=user.email if user else None,
                            user_timezone=user.timezone if user else 'Europe/Moscow',
-                           timezones=[('Europe/Moscow', 'Москва (GMT+3)'), ('Asia/Almaty', 'Алматы (GMT+5)')])
+                           timezones=common_tz)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -67,7 +68,7 @@ def register():
             return redirect(url_for('login'))
         except:
             db.session.rollback()
-            return "Ошибка регистрации (возможно, такой логин уже есть)"
+            return "Ошибка! Логин или Email занят."
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -85,7 +86,6 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# API ДЛЯ SCRIPT.JS
 @app.route('/api/set_reminder', methods=['POST'])
 def set_reminder():
     if 'user_id' not in session: return jsonify({'error': 'unauthorized'}), 401
@@ -117,13 +117,11 @@ def delete_reminder(id):
     return jsonify({'status': 'ok'})
 
 # ==========================================
-# ИНИЦИАЛИЗАЦИЯ БАЗЫ (ВНИМАТЕЛЬНО!)
+# СИЛОВОЙ СБРОС (ВНИМАНИЕ)
 # ==========================================
 with app.app_context():
-    # Раскомментируй db.drop_all() НИЖЕ только ОДИН РАЗ, чтобы обновить базу.
-    # После того как сайт заработает, снова закомментируй её.
-    # db.drop_all() 
-    db.create_all()
+    db.drop_all()  # ЭТА СТРОКА УДАЛИТ СТАРЫЕ ТАБЛИЦЫ
+    db.create_all() # ЭТА СТРОКА СОЗДАСТ НОВЫЕ С КОЛОНКОЙ SLOT
 
 if __name__ == '__main__':
     app.run(debug=True)
