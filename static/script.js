@@ -1,6 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     const setReminderForm = document.getElementById('setReminderForm');
     const remindersList = document.getElementById('remindersList');
+    const timezoneSelect = document.getElementById('timezone_select');
+
+    // Сохранение часового пояса при изменении
+    if (timezoneSelect) {
+        timezoneSelect.addEventListener('change', async () => {
+            await fetch('/api/update_timezone', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({timezone: timezoneSelect.value})
+            });
+            alert('Часовой пояс сохранен!');
+        });
+    }
 
     async function loadReminders() {
         const resp = await fetch('/api/get_reminders');
